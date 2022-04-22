@@ -7,6 +7,7 @@ WORKDIR /build
 # Download necessary Go modules
 COPY go.mod ./
 COPY go.sum ./
+COPY internal/app/reverse/*.go ./internal/app/reverse/
 RUN go mod download
 
 COPY *.go ./
