@@ -20,6 +20,6 @@ FROM scratch
 COPY --from=builder /build/server /app/
 WORKDIR /app
 
-EXPOSE 1323
+EXPOSE 9090
 
 CMD ["./server"]
