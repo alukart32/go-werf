@@ -14,5 +14,5 @@ func main() {
 		return c.String(http.StatusOK, reverse.ReverseRunes(c.Param("wordToReverse")))
 	})
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":9090"))
 }
