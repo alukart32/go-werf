@@ -1,6 +1,6 @@
-project: go-echo-server
+project: echo-reverse-service
 configVersion: 1
 
 ---
-image: go-echo-server
+image: echo-reverse-service
 dockerfile: Dockerfile
