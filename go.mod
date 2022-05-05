@@ -1,4 +1,4 @@
-module myapp
+module echo-reverse-service
 
 go 1.13
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"myapp/internal/app/reverse"
+	"echo-reverse-service/internal/app/reverse"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

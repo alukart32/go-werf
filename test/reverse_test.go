@@ -3,7 +3,7 @@ package morestrings
 import (
 	"testing"
 
-	"myapp/internal/app/reverse"
+	"echo-reverse-service/internal/app/reverse"
 )
 
 func TestReverseRunes(t *testing.T) {
