@@ -6,7 +6,9 @@ stages:
 
 before_script:
   # init werf
-  - type trdl && . $(trdl use werf 1.2 stable)
+  - curl -sSLO https://werf.io/install.sh && chmod +x install.sh
+  - ./install.sh --ci
+  - source "$(~/bin/trdl use werf 1.2 stable)"
   # prepare ci-cd werf env
   - type werf && source $(werf ci-env gitlab --as-file)
   # set env params for app's annotations or labels
