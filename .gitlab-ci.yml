@@ -37,14 +37,7 @@ Build and Publish:
 Review:
   stage: deploy
   script:
-    - >
-      if echo $CI_MERGE_REQUEST_LABELS | tr ',' '\n' | grep -q -P '^review$'; then
-        werf converge --skip-build --set "env_url=$(echo ${CI_ENVIRONMENT_URL})"
-      else
-        if werf helm get $(werf helm get-release) 2>/dev/null; then
-          werf dismiss --with-namespace
-        fi
-      fi
+    - werf converge --skip-build --set "env_url=$(echo ${CI_ENVIRONMENT_URL})"
   environment:
     name: review-${CI_MERGE_REQUEST_ID}
     url: http://${KUBE_URL}
