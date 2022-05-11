@@ -38,8 +38,6 @@ Review:
   stage: deploy
   script:
     - >
-      # do optional deploy/dismiss
-
       if echo $CI_MERGE_REQUEST_LABELS | tr ',' '\n' | grep -q -P '^review$'; then
         werf converge --skip-build --set "env_url=$(echo ${CI_ENVIRONMENT_URL})"
       else
