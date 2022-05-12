@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name:  echo-reverse-service
-          image: {{ .Values.werf.image.echo-reverse-service }}
+          image: {{ index  .Values.werf.image "echo-reverse-service" }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090
