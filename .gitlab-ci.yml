@@ -5,6 +5,8 @@ stages:
   - cleanup
 
 before_script:
+  # init werf
+  - curl -sSLO https://werf.io/install.sh && chmod +x install.sh
   - ./install.sh --ci
   - source "$(~/bin/trdl use werf 1.2 stable)"
   # set env params for app's annotations or labels
