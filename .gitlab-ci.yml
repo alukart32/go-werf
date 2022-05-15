@@ -5,8 +5,8 @@ stages:
   - cleanup
 
 before_script:
-  - type trdl && . $(trdl use werf 1.2 stable)
-  - type werf && source $(werf ci-env gitlab --as-file)
+  - ./install.sh --ci
+  - source "$(~/bin/trdl use werf 1.2 stable)"
   # set env params for app's annotations or labels
   - export WERF_ADD_ANNOTATION_APPLICATION_NAME="project.werf.io/name=${CI_PROJECT_TITLE}"
   - export WERF_ADD_ANNOTATION_APPLICATION_VERSION="project.werf.io/version=v1.0.0" # ?
