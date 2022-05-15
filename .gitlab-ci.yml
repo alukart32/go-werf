@@ -5,11 +5,7 @@ stages:
   - cleanup
 
 before_script:
-  # init werf
-  - curl -sSLO https://werf.io/install.sh && chmod +x install.sh
-  - ./install.sh --ci
-  - source "$(~/bin/trdl use werf 1.2 stable)"
-  # prepare ci-cd werf env
+  - type trdl && . $(trdl use werf 1.2 stable)
   - type werf && source $(werf ci-env gitlab --as-file)
   # set env params for app's annotations or labels
   - export WERF_ADD_ANNOTATION_APPLICATION_NAME="project.werf.io/name=${CI_PROJECT_TITLE}"
