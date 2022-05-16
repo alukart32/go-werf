@@ -46,7 +46,6 @@ Review:
       - werf.yaml
   dependencies:
     - Build and Publish
-  only: [merge_requests]
   tags: [werf]
 
 Stop Review:
@@ -60,6 +59,5 @@ Stop Review:
     GIT_STRATEGY: none
   dependencies:
     - Review
-  only: [merge_requests]
   when: manual
   tags: [werf]
