@@ -27,7 +27,7 @@ Build and Publish:
 .base_deploy:
   stage: deploy
   script:
-    - werf converge --skip-build --repo=${WERF_REPO} --set "env_url=$(echo ${CI_ENVIRONMENT_URL})"
+    - werf converge --repo=${WERF_REPO} --set "env_url=$(echo ${CI_ENVIRONMENT_URL})"
   dependencies:
     - Build and Publish
   tags: [werf]
