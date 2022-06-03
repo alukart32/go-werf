@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: echo-reverse-service
-  namespace: ci-cd-test
 spec:
   replicas: 1
   selector:
@@ -10,7 +9,6 @@ spec:
       app:  echo-reverse-service
   template:
     metadata:
-      namespace: ci-cd-test
       labels:
         app:  echo-reverse-service
     spec:

@@ -1,4 +1,4 @@
-package morestrings
+package test
 
 import (
 	"testing"
