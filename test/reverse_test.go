@@ -10,8 +10,8 @@ func TestReverseRunes(t *testing.T) {
 	cases := []struct {
 		in, want string
 	}{
-		{"Hello, world", "dlrow ,olleH"},
-		{"", ""},
+		{"Hello, world", "# dlrow ,olleH"},
+		{"", "# "},
 	}
 	for _, c := range cases {
 		got := reverse.ReverseRunes(c.in)
