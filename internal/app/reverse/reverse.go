@@ -1,4 +1,4 @@
-// Package morestrings implements additional functions to manipulate UTF-8
+// Package package reverse implements additional functions to manipulate UTF-8
 // encoded strings, beyond what is provided in the standard "strings" package.
 package reverse
 

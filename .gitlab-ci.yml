@@ -1,41 +1,75 @@
 stages:
+  - quality
+  - test
   - build
   - deploy
   - dismiss
   - cleanup
 
-before_script:
-  # init werf
-  - curl -sSLO https://werf.io/install.sh && chmod +x install.sh
-  - ./install.sh --ci
-  - source "$(~/bin/trdl use werf 1.2 stable)"
-  # set env params for app's annotations or labels
+.before_script_init_werf: &before_script_init_werf
+    - curl -sSLO https://werf.io/install.sh && chmod +x install.sh
+    - ./install.sh --ci
+    - source "$(~/bin/trdl use werf 1.2 stable)"
+    - echo "$CR_KEY" | docker login -u json_key --password-stdin "$CONTAINER_REGISTRY_URL"
+
+.before_script_deploy_start: &before_script_deploy_start
+  - *before_script_init_werf
   - export WERF_ADD_ANNOTATION_APPLICATION_NAME="project.werf.io/name=${CI_PROJECT_TITLE}"
-  - export WERF_ADD_ANNOTATION_APPLICATION_VERSION="project.werf.io/version=v1.0.0" # ?
+  - export WERF_ADD_ANNOTATION_APPLICATION_VERSION="project.werf.io/version=v1.0.0"
   - export WERF_ADD_ANNOTATION_CI_CD_JOB_URL="ci-cd.werf.io/job-url=${CI_JOB_URL}"
   - export WERF_ADD_ANNOTATION_CI_CD_GIT_COMMIT="ci-cd.werf.io/git-commit=${CI_COMMIT_SHORT_SHA}"
   - export WERF_ADD_ANNOTATION_CI_CD_GIT_TAG="ci-cd.werf.io/git-tag=${CI_COMMIT_TAG}"
   - export WERF_ADD_ANNOTATION_CI_CD_GIT_BRANCH="ci-cd.werf.io/git-branch=${CI_COMMIT_REF_SLUG}"
 
+sast:
+  stage: quality
+  image: golang:1.16.6-alpine3.14
+  before_script:
+    - echo 'Static Application Security Testing (SAST) - check your source code for known vulnerabilities.'
+  timeout: 10m
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+# See CGO_ENABLED issue: https://github.com/golang/go/issues/27303
+Test:
+  stage: test
+  image: golang:1.16.6-alpine3.14
+  script:
+    - CGO_ENABLED=0 go test ./... -coverprofile=coverage-report.out
+    - go tool cover -html=coverage-report.out -o coverage-report.html
+    - go tool cover -func=coverage-report.out
+  artifacts:
+    paths:
+      - coverage-report.html
+    expire_in: 1 days
+  coverage: "/\\(statements\\)\\s+\\d+.?\\d+%/"
+  needs:
+    - gosec-sast
+    - semgrep-sast
+
 Build and Publish:
   stage: build
+  before_script:
+    - *before_script_init_werf
   script:
-    - werf build
+    - werf build --repo="$CONTAINER_REGISTRY_URL"
   except: [schedules]
+  needs:
+    - Test
   tags: [werf]
 
 .base_deploy:
   stage: deploy
+  before_script:
+    - *before_script_deploy_start
   script:
-    - werf converge --repo=${WERF_REPO} --set "env_url=$(echo ${CI_ENVIRONMENT_URL})"
+    - werf converge --skip-build --repo="$CONTAINER_REGISTRY_URL" --set "env_url=$(echo ${CI_ENVIRONMENT_URL})" --env ${CI_ENVIRONMENT_NAME}
   dependencies:
     - Build and Publish
   tags: [werf]
 
 Review:
-  stage: deploy
-  script:
-    - werf converge --skip-build --set "env_url=$(echo ${CI_ENVIRONMENT_URL})"
+  extends: .base_deploy
   environment:
     name: review-${CI_MERGE_REQUEST_ID}
     url: http://${KUBE_URL}
@@ -44,12 +78,21 @@ Review:
   artifacts:
     paths:
       - werf.yaml
-  dependencies:
-    - Build and Publish
+  only: [merge_requests]
   tags: [werf]
 
+Deploy to Staging:
+  extends: .base_deploy
+  environment:
+    name: staging
+    url: http://${KUBE_URL}
+  when: manual
+  only: [merge_requests]
+  
 Stop Review:
   stage: dismiss
+  before_script:
+    - *before_script_init_werf
   script:
     - werf dismiss --with-namespace
   environment:
@@ -59,5 +102,16 @@ Stop Review:
     GIT_STRATEGY: none
   dependencies:
     - Review
+  needs:
+    - Review
   when: manual
+  only: [merge_requests]
+  tags: [werf]
+
+Cleanup:
+  stage: cleanup
+  script:
+    - docker login -u nobody -p ${WERF_IMAGES_CLEANUP_PASSWORD} ${WERF_REPO}
+    - werf cleanup
+  only: [schedules]
   tags: [werf]
