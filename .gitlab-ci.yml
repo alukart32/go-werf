@@ -79,6 +79,7 @@ Review:
     paths:
       - werf.yaml
   only: [merge_requests]
+  when: manual
   tags: [werf]
 
 Deploy to Staging:
