@@ -82,8 +82,6 @@ Review:
   artifacts:
     paths:
       - werf.yaml
-  only: [merge_requests]
-  when: manual
   tags: [werf]
 
 Deploy to Staging:
@@ -91,8 +89,6 @@ Deploy to Staging:
   environment:
     name: staging
     url: http://${KUBE_URL}
-  when: manual
-  only: [merge_requests]
   
 Stop Review:
   stage: dismiss
