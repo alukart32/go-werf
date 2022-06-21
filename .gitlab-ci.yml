@@ -67,6 +67,10 @@ Build and Publish:
   dependencies:
     - Build and Publish
   tags: [werf]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_REF_NAME =~ /(^dev$|^master$|^br_\d+.*|^hf_\d+.*)/ 
+      when: manual
+      allow_failure: true
 
 Review:
   extends: .base_deploy
@@ -78,8 +82,6 @@ Review:
   artifacts:
     paths:
       - werf.yaml
-  only: [merge_requests]
-  when: manual
   tags: [werf]
 
 Deploy to Staging:
@@ -87,8 +89,6 @@ Deploy to Staging:
   environment:
     name: staging
     url: http://${KUBE_URL}
-  when: manual
-  only: [merge_requests]
   
 Stop Review:
   stage: dismiss
@@ -101,12 +101,12 @@ Stop Review:
     action: stop
   variables:
     GIT_STRATEGY: none
-  dependencies:
-    - Review
   needs:
     - Review
-  when: manual
-  only: [merge_requests]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_REF_NAME =~ /(^dev$|^master$|^br_\d+.*|^hf_\d+.*)/ 
+      when: manual
+      allow_failure: true
   tags: [werf]
 
 Cleanup:
