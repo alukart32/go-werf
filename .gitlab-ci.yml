@@ -27,7 +27,6 @@ sast:
   before_script:
     - echo 'Static Application Security Testing (SAST) - check your source code for known vulnerabilities.'
   timeout: 10m
-  tags: [werf]
 include:
   - template: Security/SAST.gitlab-ci.yml
 
@@ -47,7 +46,6 @@ Test:
   needs:
     - gosec-sast
     - semgrep-sast
-  tags: [werf]
 
 Build and Publish:
   stage: build
