@@ -68,7 +68,7 @@ Build and Publish:
     - Build and Publish
   tags: [werf]
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_REF_NAME =~ /(^dev$|^master$|^br_\d+.*|^hf_\d+.*)/ '
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_REF_NAME =~ /(^dev$|^master$|^br_\d+.*|^hf_\d+.*)/ 
       when: manual
       allow_failure: true
 
